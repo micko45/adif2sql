@@ -16,7 +16,8 @@ def connect_database():
             password=db_password,
             database=db_name,
             port=db_port,
-            use_pure=True  # Use pure Python MySQL connector
+            ssl_disabled=True  # Disable SSL if not needed
+
         )
         logging.info("Connected to the database.")
         return connection
