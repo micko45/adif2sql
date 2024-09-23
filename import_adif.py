@@ -89,72 +89,29 @@ def insert_qso(connection, qso):
     """Insert a single QSO into the MariaDB database."""
     try:
         cursor = connection.cursor()
+
+        # Insert only the necessary fields to avoid errors with missing fields
         insert_query = '''
         INSERT INTO qsos (
-            adif_ver, qso_date, time_on, time_off, callsign, band, freq, mode, submode, 
-            rst_sent, rst_rcvd, tx_pwr, operator, station_callsign, my_gridsquare, 
-            gridsquare, qth, name, my_country, my_cnty, my_state, my_cq_zone, my_itu_zone,
-            country, cnty, state, cq_zone, itu_zone, contest_id, srx, srx_string, stx,
-            stx_string, category, operator_category, eqsl_qsl_sent, eqsl_qsl_rcvd,
-            lotw_qsl_sent, lotw_qsl_rcvd, qsl_sent, qsl_rcvd, dxcc, iota, sat_mode, 
-            sat_name, prop_mode, notes, comment, user_defined
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+            qso_date, time_on, callsign, band, freq, mode, rst_sent, rst_rcvd, name, qth, gridsquare, tx_pwr
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         '''
         print(f"Inserting QSO: {qso}")
-        
-        # Ensure all fields are present in the QSO data, use None for missing fields
+
+        # Ensure all the required fields are present, use None for missing fields
         cursor.execute(insert_query, (
-            qso.get('adif_ver', None),
             qso.get('qso_date', None),
             qso.get('time_on', None),
-            qso.get('time_off', None),
-            qso.get('callsign', None),  # Use callsign as the column name
+            qso.get('callsign', None),  # Ensure 'callsign' is not missing
             qso.get('band', None),
             qso.get('freq', None),
             qso.get('mode', None),
-            qso.get('submode', None),
             qso.get('rst_sent', None),
             qso.get('rst_rcvd', None),
-            qso.get('tx_pwr', None),
-            qso.get('operator', None),
-            qso.get('station_callsign', None),
-            qso.get('my_gridsquare', None),
-            qso.get('gridsquare', None),
-            qso.get('qth', None),
             qso.get('name', None),
-            qso.get('my_country', None),
-            qso.get('my_cnty', None),
-            qso.get('my_state', None),
-            qso.get('my_cq_zone', None),
-            qso.get('my_itu_zone', None),
-            qso.get('country', None),
-            qso.get('cnty', None),
-            qso.get('state', None),
-            qso.get('cq_zone', None),
-            qso.get('itu_zone', None),
-            qso.get('contest_id', None),
-            qso.get('srx', None),
-            qso.get('srx_string', None),
-            qso.get('stx', None),
-            qso.get('stx_string', None),
-            qso.get('category', None),
-            qso.get('operator_category', None),
-            qso.get('eqsl_qsl_sent', None),
-            qso.get('eqsl_qsl_rcvd', None),
-            qso.get('lotw_qsl_sent', None),
-            qso.get('lotw_qsl_rcvd', None),
-            qso.get('qsl_sent', None),
-            qso.get('qsl_rcvd', None),
-            qso.get('dxcc', None),
-            qso.get('iota', None),
-            qso.get('sat_mode', None),
-            qso.get('sat_name', None),
-            qso.get('prop_mode', None),
-            qso.get('notes', None),
-            qso.get('comment', None),
-            qso.get('user_defined', None)
+            qso.get('qth', None),
+            qso.get('gridsquare', None),
+            qso.get('tx_pwr', None)
         ))
         
         # Commit the transaction
@@ -166,7 +123,6 @@ def insert_qso(connection, qso):
         connection.rollback()  # Rollback in case of failure
     finally:
         cursor.close()
-
 
 def import_adif(adif_file_path):
     """Main function to import ADIF file into the MariaDB database."""
