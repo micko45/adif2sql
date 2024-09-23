@@ -41,4 +41,32 @@ This repository provides a set of scripts to manage a MariaDB database for loggi
 3. Run the database setup script to create the required tables:
 
   ```bash
+  python create_database.py
+
+## Usage
+
+### Creating the Database
+
+The `create_database.py` script sets up the MariaDB database schema to support ADIF fields.
+
+```bash
 python create_database.py
+This script creates a qsos table with fields for commonly used ADIF data, such as call signs, bands, frequencies, modes, and other details relevant to a QSO.
+
+Importing ADIF Data
+To import ADIF data into the database, use the import_adif.py script:
+
+bash
+Copy code
+python import_adif.py path/to/adif-file.adif
+This script will read the ADIF file, parse the QSO entries, and insert them into the qsos table in the database.
+
+Exporting ADIF Data
+To export the QSOs from the database back into ADIF format, use the export_adif.py script:
+
+bash
+Copy code
+python export_adif.py output-file.adif
+This script will query the database for all stored QSOs and write them to an ADIF file, ready for use in logging software or QSL services.
+
+
