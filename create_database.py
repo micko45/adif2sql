@@ -1,3 +1,6 @@
+import mysql.connector
+from mysql.connector import Error
+
 from dblogin import *
 
 def create_database():
