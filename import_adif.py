@@ -1,7 +1,11 @@
 import mysql.connector
 import sys
+import logging
 from mysql.connector import Error
 from dblogin import *
+
+# Configure logging
+logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def connect_database():
     """Connect to MariaDB."""
@@ -12,13 +16,12 @@ def connect_database():
             password=db_password,
             database=db_name,
             port=db_port,
-            ssl_disabled=True  # Disable SSL if not needed
-
+            use_pure=True  # Use pure Python MySQL connector
         )
-        print("Connected to the database.")
+        logging.info("Connected to the database.")
         return connection
     except Error as e:
-        print(f"Error connecting to the database: {e}")
+        logging.error(f"Error connecting to the database: {e}")
         sys.exit(1)
 
 def parse_adif(adif_file_path):
@@ -32,15 +35,15 @@ def parse_adif(adif_file_path):
     for i, line in enumerate(lines):
         line = line.strip()  # Remove any leading/trailing whitespace
         
-        # Debugging: print each line as it's being processed
-        print(f"Processing line {i + 1}: {line}")
+        # Logging: log each line as it's being processed
+        logging.debug(f"Processing line {i + 1}: {line}")
         
         if not line:  # Skip empty lines
-            print(f"Skipping empty line {i + 1}")
+            logging.debug(f"Skipping empty line {i + 1}")
             continue
         
         if line.upper() == "<EOH>":  # Skip the end of header marker
-            print(f"Skipping EOH at line {i + 1}")
+            logging.debug(f"Skipping EOH at line {i + 1}")
             continue
         
         # Split the line by spaces, each part should be a valid ADIF field or <eor>
@@ -50,7 +53,7 @@ def parse_adif(adif_file_path):
             if field.upper() == "<EOR>":  # End of QSO record
                 if qso_data:  # Only append if there's valid data
                     qsos.append(qso_data)
-                    print(f"QSO added: {qso_data}")
+                    logging.debug(f"QSO added: {qso_data}")
                 qso_data = {}  # Reset for next QSO
                 continue
             
@@ -61,7 +64,7 @@ def parse_adif(adif_file_path):
                 
                 tag_content = field[field_start + 1:field_end]
                 if ':' not in tag_content:
-                    print(f"Invalid tag structure: {tag_content}, skipping line {i + 1}")
+                    logging.warning(f"Invalid tag structure: {tag_content}, skipping line {i + 1}")
                     continue
                 
                 field_info = tag_content.split(':')
@@ -71,7 +74,7 @@ def parse_adif(adif_file_path):
                 try:
                     field_length = int(field_info[1])
                 except (IndexError, ValueError):
-                    print(f"Error parsing field length for {field_name} at line {i + 1}, skipping...")
+                    logging.error(f"Error parsing field length for {field_name} at line {i + 1}, skipping...")
                     continue
 
                 field_value = field[field_end + 1:field_end + 1 + field_length].strip()
@@ -82,7 +85,7 @@ def parse_adif(adif_file_path):
                     
                 qso_data[field_name] = field_value.strip()
     
-    print(f"Total QSOs parsed: {len(qsos)}")
+    logging.info(f"Total QSOs parsed: {len(qsos)}")
     return qsos
 
 def insert_qso(connection, qso):
@@ -96,7 +99,7 @@ def insert_qso(connection, qso):
             qso_date, time_on, callsign, band, freq, mode, rst_sent, rst_rcvd, name, qth, gridsquare, tx_pwr
         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         '''
-        print(f"Inserting QSO: {qso}")
+        logging.debug(f"Inserting QSO: {qso}")
 
         # Ensure all the required fields are present, use None for missing fields
         cursor.execute(insert_query, (
@@ -116,10 +119,10 @@ def insert_qso(connection, qso):
         
         # Commit the transaction
         connection.commit()
-        print(f"QSO successfully inserted into the database.")
+        logging.info(f"QSO successfully inserted into the database.")
         
     except Error as e:
-        print(f"Error inserting QSO: {e}")
+        logging.error(f"Error inserting QSO: {e}")
         connection.rollback()  # Rollback in case of failure
     finally:
         cursor.close()
@@ -132,18 +135,18 @@ def import_adif(adif_file_path):
     # Insert each QSO into the database
     for qso in qsos:
         if 'callsign' not in qso or not qso['callsign']:
-            print("Skipping invalid QSO with missing callsign")
+            logging.warning("Skipping invalid QSO with missing callsign")
             continue
         insert_qso(connection, qso)  # Insert each parsed QSO into the DB
     
-    print(f"Imported {len(qsos)} QSOs successfully.")
+    logging.info(f"Imported {len(qsos)} QSOs successfully.")
     
     if connection.is_connected():
         connection.close()
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print("Usage: python import_adif.py path/to/adif-file.adif")
+        logging.error("Usage: python import_adif.py path/to/adif-file.adif")
         sys.exit(1)
     
     adif_file_path = sys.argv[1]
