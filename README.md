@@ -34,13 +34,14 @@ This repository provides a set of scripts to manage a MariaDB database for loggi
    ```bash
    git clone https://github.com/your-username/adif-database-importer.git
    cd adif-database-importer
+   
 2. Set up your MariaDB database:
 
 - **Update the connection details in the provided scripts (e.g., db_host, db_user, db_password).
 
 3. Run the database setup script to create the required tables:
 
-  ```bash
+```bash
   python create_database.py
 
 ## Usage
