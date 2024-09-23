@@ -1,4 +1,3 @@
-
 import mysql.connector
 import sys
 from mysql.connector import Error
@@ -13,8 +12,7 @@ def connect_database():
             password=db_password,
             database=db_name,
             port=db_port,
-            ssl_disabled=True  # Disable SSL explicitly
-
+            use_pure=True  # Use pure Python MySQL connector
         )
         print("Connected to the database.")
         return connection
@@ -32,7 +30,7 @@ def parse_adif(adif_file_path):
     
     for i, line in enumerate(lines):
         line = line.strip()  # Remove any leading/trailing whitespace
-
+        
         # Debugging: print each line as it's being processed
         print(f"Processing line {i + 1}: {line}")
         
@@ -86,24 +84,103 @@ def parse_adif(adif_file_path):
     print(f"Total QSOs parsed: {len(qsos)}")
     return qsos
 
-
+def insert_qso(connection, qso):
+    """Insert a single QSO into the MariaDB database."""
+    try:
+        cursor = connection.cursor()
+        insert_query = '''
+        INSERT INTO qsos (
+            adif_ver, qso_date, time_on, time_off, callsign, band, freq, mode, submode, 
+            rst_sent, rst_rcvd, tx_pwr, operator, station_callsign, my_gridsquare, 
+            gridsquare, qth, name, my_country, my_cnty, my_state, my_cq_zone, my_itu_zone,
+            country, cnty, state, cq_zone, itu_zone, contest_id, srx, srx_string, stx,
+            stx_string, category, operator_category, eqsl_qsl_sent, eqsl_qsl_rcvd,
+            lotw_qsl_sent, lotw_qsl_rcvd, qsl_sent, qsl_rcvd, dxcc, iota, sat_mode, 
+            sat_name, prop_mode, notes, comment, user_defined
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
+                  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
+                  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        '''
+        print(f"Inserting QSO: {qso}")
+        
+        # Execute the insert query with QSO data
+        cursor.execute(insert_query, (
+            qso.get('adif_ver'),
+            qso.get('qso_date'),
+            qso.get('time_on'),
+            qso.get('time_off'),
+            qso.get('callsign'),  # Use callsign as the column name
+            qso.get('band'),
+            qso.get('freq'),
+            qso.get('mode'),
+            qso.get('submode'),
+            qso.get('rst_sent'),
+            qso.get('rst_rcvd'),
+            qso.get('tx_pwr'),
+            qso.get('operator'),
+            qso.get('station_callsign'),
+            qso.get('my_gridsquare'),
+            qso.get('gridsquare'),
+            qso.get('qth'),
+            qso.get('name'),
+            qso.get('my_country'),
+            qso.get('my_cnty'),
+            qso.get('my_state'),
+            qso.get('my_cq_zone'),
+            qso.get('my_itu_zone'),
+            qso.get('country'),
+            qso.get('cnty'),
+            qso.get('state'),
+            qso.get('cq_zone'),
+            qso.get('itu_zone'),
+            qso.get('contest_id'),
+            qso.get('srx'),
+            qso.get('srx_string'),
+            qso.get('stx'),
+            qso.get('stx_string'),
+            qso.get('category'),
+            qso.get('operator_category'),
+            qso.get('eqsl_qsl_sent'),
+            qso.get('eqsl_qsl_rcvd'),
+            qso.get('lotw_qsl_sent'),
+            qso.get('lotw_qsl_rcvd'),
+            qso.get('qsl_sent'),
+            qso.get('qsl_rcvd'),
+            qso.get('dxcc'),
+            qso.get('iota'),
+            qso.get('sat_mode'),
+            qso.get('sat_name'),
+            qso.get('prop_mode'),
+            qso.get('notes'),
+            qso.get('comment'),
+            qso.get('user_defined')
+        ))
+        
+        # Commit the transaction
+        connection.commit()
+        print(f"QSO successfully inserted into the database.")
+        
+    except Error as e:
+        print(f"Error inserting QSO: {e}")
+        connection.rollback()  # Rollback in case of failure
+    finally:
+        cursor.close()
 
 def import_adif(adif_file_path):
     """Main function to import ADIF file into the MariaDB database."""
     connection = connect_database()
     qsos = parse_adif(adif_file_path)
     
+    # Insert each QSO into the database
     for qso in qsos:
-        # Ensure data validation before inserting
-        if 'call' not in qso or not qso['call']:
-            print("Skipping invalid QSO with missing call sign")
+        if 'callsign' not in qso or not qso['callsign']:
+            print("Skipping invalid QSO with missing callsign")
             continue
-        insert_qso(connection, qso)
+        insert_qso(connection, qso)  # Insert each parsed QSO into the DB
     
     print(f"Imported {len(qsos)} QSOs successfully.")
     
     if connection.is_connected():
-        connection.commit()  # Commit all changes at once if successful
         connection.close()
 
 if __name__ == '__main__':
