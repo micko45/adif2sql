@@ -15,7 +15,8 @@ def create_database():
             host=db_host,
             user=db_user,
             password=db_password
-            port=db_port
+            port=db_port,
+            ssl_disabled=True  # Disable SSL if not needed
         )
         cursor = connection.cursor()
         cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name};")
