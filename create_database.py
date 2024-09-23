@@ -49,7 +49,7 @@ def create_qso_table():
             submode VARCHAR(20),
             rst_sent VARCHAR(5),
             rst_rcvd VARCHAR(5),
-            tx_pwr DECIMAL(5,2),
+            tx_pwr DECIMAL(8,2),
             operator VARCHAR(20),
             station_callsign VARCHAR(20),
             my_gridsquare VARCHAR(10),
