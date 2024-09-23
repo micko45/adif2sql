@@ -10,7 +10,10 @@ def connect_database():
             host=db_host,
             user=db_user,
             password=db_password,
-            database=db_name
+            database=db_name,
+            port=db_port,
+            ssl_disabled=True  # Disable SSL if not needed
+
         )
         return connection
     except Error as e:
