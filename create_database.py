@@ -6,7 +6,7 @@ def create_database():
         connection = mysql.connector.connect(
             host=db_host,
             user=db_user,
-            password=db_password
+            password=db_password,
             port=db_port,
             ssl_disabled=True  # Disable SSL if not needed
         )
