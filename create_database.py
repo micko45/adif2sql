@@ -6,6 +6,7 @@ db_host = 'localhost'
 db_user = 'root'
 db_password = 'your_password'
 db_name = 'adif_log'
+db_port = 'db_port' 
 
 def create_database():
     """Create MariaDB database."""
@@ -14,6 +15,7 @@ def create_database():
             host=db_host,
             user=db_user,
             password=db_password
+            port=db_port
         )
         cursor = connection.cursor()
         cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name};")
