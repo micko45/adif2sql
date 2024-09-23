@@ -5,7 +5,7 @@ from mysql.connector import Error
 from dblogin import *
 
 # Configure logging
-logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def connect_database():
     """Connect to MariaDB."""
