@@ -87,6 +87,7 @@ def create_qso_table():
             notes TEXT,
             comment TEXT,
             user_defined TEXT
+            UNIQUE (callsign, qso_date, time_on)  -- Unique constraint to prevent duplicates
         );
         '''
         cursor.execute(create_table_query)
