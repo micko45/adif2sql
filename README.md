@@ -41,5 +41,4 @@ This repository provides a set of scripts to manage a MariaDB database for loggi
 3. Run the database setup script to create the required tables:
 
   ```bash
-Copy code
 python create_database.py
