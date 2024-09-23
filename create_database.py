@@ -1,4 +1,4 @@
-import dblogin
+from dblogin import *
 import mysql.connector
 from mysql.connector import Error
 
