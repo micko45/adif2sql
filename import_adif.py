@@ -122,9 +122,13 @@ def insert_qso(connection, qso):
         connection.commit()
         logging.info(f"QSO successfully inserted into the database.")
         
-    except Error as e:
-        logging.error(f"Error inserting QSO: {e}")
-        connection.rollback()  # Rollback in case of failure
+    except mysql.connector.Error as e:
+        if e.errno == mysql.connector.errorcode.ER_DUP_ENTRY:
+            # Handle duplicate entry
+            logging.warning(f"Duplicate entry detected for QSO: {qso}. Skipping insertion.")
+        else:
+            logging.error(f"Error inserting QSO: {e}")
+            connection.rollback()  # Rollback in case of failure
     finally:
         cursor.close()
 
