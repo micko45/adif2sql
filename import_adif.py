@@ -167,12 +167,6 @@ def insert_qso(connection, qso):
     finally:
         cursor.close()
 
-        
-    except Error as e:
-        print(f"Error inserting QSO: {e}")
-        connection.rollback()  # Rollback in case of failure
-    finally:
-        cursor.close()
 
 def import_adif(adif_file_path):
     """Main function to import ADIF file into the MariaDB database."""
