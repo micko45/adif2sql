@@ -1,12 +1,7 @@
 import mysql.connector
-from mysql.connector import Error
 import sys
-
-# Database configuration (update these according to your setup)
-db_host = 'localhost'
-db_user = 'root'
-db_password = 'your_password'
-db_name = 'adif_log'
+from mysql.connector import Error
+from dblogin import *
 
 def connect_database():
     """Connect to MariaDB."""
