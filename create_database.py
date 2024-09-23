@@ -11,7 +11,7 @@ def connect_database():
             password=db_password,
             database=db_name,
             port=db_port,
-            use_pure=True
+            ssl_disabled=True  # Disable SSL if not needed
         )
         if connection.is_connected():
             print("Connected to the database.")
