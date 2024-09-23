@@ -1,4 +1,4 @@
-import dblog.py
+import dblogin
 
 def create_database():
     """Create MariaDB database."""
