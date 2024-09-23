@@ -15,7 +15,6 @@ This repository provides a set of scripts to manage a MariaDB database for loggi
   - [Creating the Database](#creating-the-database)
   - [Importing ADIF Data](#importing-adif-data)
   - [Exporting ADIF Data](#exporting-adif-data)
-- [Contributing](#contributing)
 - [License](#license)
 
 ## Requirements
@@ -72,4 +71,9 @@ python export_adif.py output-file.adif
 ```
 This script will query the database for all stored QSOs and write them to an ADIF file, ready for use in logging software or QSL services.
 
+## License
 
+This project is licensed under the GNU General Public License (GPLv3). You are free to copy, modify, and distribute this software under the terms of the GNU GPLv3. See the [LICENSE](LICENSE) file for complete details.
+
+For more information about the GNU GPLv3 license, visit:  
+[https://www.gnu.org/licenses/gpl-3.0.en.html](https://www.gnu.org/licenses/gpl-3.0.en.html)
