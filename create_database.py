@@ -1,12 +1,4 @@
-import mysql.connector
-from mysql.connector import Error
-
-# Database configuration (change these according to your setup)
-db_host = 'localhost'
-db_user = 'root'
-db_password = 'your_password'
-db_name = 'adif_log'
-db_port = 'db_port' 
+import dblog.py
 
 def create_database():
     """Create MariaDB database."""
@@ -35,7 +27,8 @@ def create_qso_table():
             host=db_host,
             user=db_user,
             password=db_password,
-            database=db_name
+            database=db_name,
+            ssl_disabled=True  # Disable SSL if not needed
         )
         cursor = connection.cursor()
         create_table_query = '''
@@ -45,7 +38,7 @@ def create_qso_table():
             qso_date DATE,
             time_on TIME,
             time_off TIME,
-            call VARCHAR(20),
+            callsign VARCHAR(20),
             band VARCHAR(10),
             freq DECIMAL(10,6),
             mode VARCHAR(10),
