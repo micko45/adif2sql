@@ -28,6 +28,7 @@ def create_qso_table():
             user=db_user,
             password=db_password,
             database=db_name,
+            port=db_port,
             ssl_disabled=True  # Disable SSL if not needed
         )
         cursor = connection.cursor()
