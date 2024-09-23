@@ -14,9 +14,10 @@ def connect_database():
             port=db_port,
             use_pure=True  # Use pure Python MySQL connector
         )
+        print("Connected to the database.")
         return connection
     except Error as e:
-        print(f"Error: {e}")
+        print(f"Error connecting to the database: {e}")
         sys.exit(1)
 
 def parse_adif(adif_file_path):
@@ -30,6 +31,7 @@ def parse_adif(adif_file_path):
     for line in lines:
         if line.strip() == "<eor>":  # End of record
             qsos.append(qso_data)
+            print(f"QSO parsed: {qso_data}")  # Print the parsed QSO for visibility
             qso_data = {}
             continue
         
@@ -43,6 +45,7 @@ def parse_adif(adif_file_path):
             qso_data[field_name] = field_value.strip()
             line = line[field_end + 1 + field_length:]
     
+    print(f"Total QSOs parsed: {len(qsos)}")  # Print the total number of parsed QSOs
     return qsos
 
 def insert_qso(connection, qso):
@@ -62,6 +65,9 @@ def insert_qso(connection, qso):
                   %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
                   %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         '''
+        # Print what is being inserted for visibility
+        print(f"Inserting QSO: {qso}")
+        
         cursor.execute(insert_query, (
             qso.get('adif_ver'),
             qso.get('qso_date'),
@@ -113,8 +119,37 @@ def insert_qso(connection, qso):
             qso.get('comment'),
             qso.get('user_defined')
         ))
+        connection.commit()  # Commit after every insert for visibility
+        print("QSO inserted successfully.")
+        
     except Error as e:
         print(f"Error inserting QSO: {e}")
         connection.rollback()  # Rollback in case of failure
     finally:
         cursor.close()
+
+def import_adif(adif_file_path):
+    """Main function to import ADIF file into the MariaDB database."""
+    connection = connect_database()
+    qsos = parse_adif(adif_file_path)
+    
+    for qso in qsos:
+        # Ensure data validation before inserting
+        if 'call' not in qso or not qso['call']:
+            print("Skipping invalid QSO with missing call sign")
+            continue
+        insert_qso(connection, qso)
+    
+    print(f"Imported {len(qsos)} QSOs successfully.")
+    
+    if connection.is_connected():
+        connection.commit()  # Commit all changes at once if successful
+        connection.close()
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print("Usage: python import_adif.py path/to/adif-file.adif")
+        sys.exit(1)
+    
+    adif_file_path = sys.argv[1]
+    import_adif(adif_file_path)
