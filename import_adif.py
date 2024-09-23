@@ -103,62 +103,69 @@ def insert_qso(connection, qso):
         '''
         print(f"Inserting QSO: {qso}")
         
-        # Execute the insert query with QSO data
+        # Ensure all fields are present in the QSO data, use None for missing fields
         cursor.execute(insert_query, (
-            qso.get('adif_ver'),
-            qso.get('qso_date'),
-            qso.get('time_on'),
-            qso.get('time_off'),
-            qso.get('callsign'),  # Use callsign as the column name
-            qso.get('band'),
-            qso.get('freq'),
-            qso.get('mode'),
-            qso.get('submode'),
-            qso.get('rst_sent'),
-            qso.get('rst_rcvd'),
-            qso.get('tx_pwr'),
-            qso.get('operator'),
-            qso.get('station_callsign'),
-            qso.get('my_gridsquare'),
-            qso.get('gridsquare'),
-            qso.get('qth'),
-            qso.get('name'),
-            qso.get('my_country'),
-            qso.get('my_cnty'),
-            qso.get('my_state'),
-            qso.get('my_cq_zone'),
-            qso.get('my_itu_zone'),
-            qso.get('country'),
-            qso.get('cnty'),
-            qso.get('state'),
-            qso.get('cq_zone'),
-            qso.get('itu_zone'),
-            qso.get('contest_id'),
-            qso.get('srx'),
-            qso.get('srx_string'),
-            qso.get('stx'),
-            qso.get('stx_string'),
-            qso.get('category'),
-            qso.get('operator_category'),
-            qso.get('eqsl_qsl_sent'),
-            qso.get('eqsl_qsl_rcvd'),
-            qso.get('lotw_qsl_sent'),
-            qso.get('lotw_qsl_rcvd'),
-            qso.get('qsl_sent'),
-            qso.get('qsl_rcvd'),
-            qso.get('dxcc'),
-            qso.get('iota'),
-            qso.get('sat_mode'),
-            qso.get('sat_name'),
-            qso.get('prop_mode'),
-            qso.get('notes'),
-            qso.get('comment'),
-            qso.get('user_defined')
+            qso.get('adif_ver', None),
+            qso.get('qso_date', None),
+            qso.get('time_on', None),
+            qso.get('time_off', None),
+            qso.get('callsign', None),  # Use callsign as the column name
+            qso.get('band', None),
+            qso.get('freq', None),
+            qso.get('mode', None),
+            qso.get('submode', None),
+            qso.get('rst_sent', None),
+            qso.get('rst_rcvd', None),
+            qso.get('tx_pwr', None),
+            qso.get('operator', None),
+            qso.get('station_callsign', None),
+            qso.get('my_gridsquare', None),
+            qso.get('gridsquare', None),
+            qso.get('qth', None),
+            qso.get('name', None),
+            qso.get('my_country', None),
+            qso.get('my_cnty', None),
+            qso.get('my_state', None),
+            qso.get('my_cq_zone', None),
+            qso.get('my_itu_zone', None),
+            qso.get('country', None),
+            qso.get('cnty', None),
+            qso.get('state', None),
+            qso.get('cq_zone', None),
+            qso.get('itu_zone', None),
+            qso.get('contest_id', None),
+            qso.get('srx', None),
+            qso.get('srx_string', None),
+            qso.get('stx', None),
+            qso.get('stx_string', None),
+            qso.get('category', None),
+            qso.get('operator_category', None),
+            qso.get('eqsl_qsl_sent', None),
+            qso.get('eqsl_qsl_rcvd', None),
+            qso.get('lotw_qsl_sent', None),
+            qso.get('lotw_qsl_rcvd', None),
+            qso.get('qsl_sent', None),
+            qso.get('qsl_rcvd', None),
+            qso.get('dxcc', None),
+            qso.get('iota', None),
+            qso.get('sat_mode', None),
+            qso.get('sat_name', None),
+            qso.get('prop_mode', None),
+            qso.get('notes', None),
+            qso.get('comment', None),
+            qso.get('user_defined', None)
         ))
         
         # Commit the transaction
         connection.commit()
         print(f"QSO successfully inserted into the database.")
+        
+    except Error as e:
+        print(f"Error inserting QSO: {e}")
+        connection.rollback()  # Rollback in case of failure
+    finally:
+        cursor.close()
+
         
     except Error as e:
         print(f"Error inserting QSO: {e}")
