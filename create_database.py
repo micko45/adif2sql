@@ -1,6 +1,4 @@
 from dblogin import *
-import mysql.connector
-from mysql.connector import Error
 
 def create_database():
     """Create MariaDB database."""
