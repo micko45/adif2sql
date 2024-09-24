@@ -95,6 +95,7 @@ def format_adif(qsos):
         add_field("MY_COUNTRY", qso.get('my_country'))
         add_field("MY_CNTY", qso.get('my_cnty'))
         add_field("MY_STATE", qso.get('my_state'))
+        add_field("MY_NAME", qso.get('my_name'))
         add_field("MY_CQ_ZONE", qso.get('my_cq_zone'))
         add_field("MY_ITU_ZONE", qso.get('my_itu_zone'))
         add_field("COUNTRY", qso.get('country'))
