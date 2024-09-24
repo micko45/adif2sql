@@ -48,75 +48,40 @@ import re
 def parse_adif(adif_file_path):
     """Parse ADIF file and return a list of QSO dictionaries."""
     qsos = []
-    qso_data = {}
-
+    
     with open(adif_file_path, 'r') as file:
-        lines = file.readlines()
+        content = file.read()
+    
+    # Remove header up to <EOH>
+    header_end = content.upper().find("<EOH>")
+    if header_end != -1:
+        content = content[header_end + len("<EOH>"):]
+    else:
+        # If <EOH> not found, start from beginning
+        header_end = 0
 
-    for i, line in enumerate(lines):
-        line = line.strip()  # Remove any leading/trailing whitespace
-
-        # Logging: log each line as it's being processed
-        logging.debug(f"Processing line {i + 1}: {line}")
-
-        if not line:  # Skip empty lines
-            logging.debug(f"Skipping empty line {i + 1}")
+    # Split content by <EOR>
+    records = re.split(r'(?i)<EOR>', content)
+    
+    for record in records:
+        record = record.strip()
+        if not record:
             continue
-
-        if line.upper() == "<EOH>":  # Skip the end of header marker
-            logging.debug(f"Skipping EOH at line {i + 1}")
-            continue
-
-        # Split the line by spaces, each part should be a valid ADIF field or <eor>
-        fields = line.split()
-
+        qso_data = {}
+        # Use regex to find all fields
+        fields = re.findall(r'<([^:<>]+):(\d+)>([^<]*)', record)
         for field in fields:
-            if field.upper() == "<EOR>":  # End of QSO record
-                if qso_data:  # Only append if there's valid data
-                    qsos.append(qso_data)
-                    logging.debug(f"QSO added: {qso_data}")
-                qso_data = {}  # Reset for next QSO
-                continue
-
-            # Process ADIF fields like <CALL:6>EI9ABC
-            if '<' in field and '>' in field:
-                field_start = field.find('<')
-                field_end = field.find('>')
-
-                tag_content = field[field_start + 1:field_end]
-                if ':' not in tag_content:
-                    logging.warning(f"Invalid tag structure: {tag_content}, skipping line {i + 1}")
-                    continue
-
-                field_info = tag_content.split(':')
-                field_name = field_info[0].lower()
-
-                # Ensure the field has a length part and is an integer
-                try:
-                    field_length = int(field_info[1])
-                except (IndexError, ValueError):
-                    logging.error(f"Error parsing field length for {field_name} at line {i + 1}, skipping...")
-                    continue
-
-                field_value = field[field_end + 1:field_end + 1 + field_length].strip()
-
-                # Handle specific cases like time and date fields that might have type indicators (e.g., D for date, T for time)
-                if field_name == 'time_on' or field_name == 'time_off':
-                    if field_info[2].upper() == 'T':  # Check for 'T' indicating time
-                        field_value = field_value  # Keep time value as is
-                elif field_name == 'qso_date' or field_name == 'qso_date_off':
-                    if field_info[2].upper() == 'D':  # Check for 'D' indicating date
-                        field_value = field_value  # Keep date value as is
-
-                # Map 'call' to 'callsign'
-                if field_name == 'call':
-                    field_name = 'callsign'
-
-                qso_data[field_name] = field_value.strip()
-
+            field_name = field[0].lower()
+            field_length = int(field[1])
+            field_value = field[2][:field_length].strip()
+            if field_name == 'call':
+                field_name = 'callsign'
+            qso_data[field_name] = field_value
+        if qso_data:
+            qsos.append(qso_data)
+    
     logging.info(f"Total QSOs parsed: {len(qsos)}")
     return qsos
-
 
 def insert_qso(connection, qso):
     """Insert a single QSO into the MariaDB database."""
