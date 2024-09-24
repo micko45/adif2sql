@@ -94,7 +94,7 @@ def insert_qso(connection, qso):
             'qso_date', 'time_on', 'time_off', 'callsign', 'band', 'freq', 'mode', 'submode',
             'rst_sent', 'rst_rcvd', 'tx_pwr', 'operator', 'station_callsign', 'my_gridsquare',
             'gridsquare', 'qth', 'name', 'my_country', 'my_cnty', 'my_state', 'my_cq_zone', 
-            'my_itu_zone', 'country', 'cnty', 'state', 'cq_zone', 'itu_zone', 'contest_id', 
+            'my_itu_zone', 'country', 'cnty', 'state', 'my_name', 'cq_zone', 'itu_zone', 'contest_id', 
             'srx', 'stx', 'category', 'operator_category', 'eqsl_qsl_sent', 'eqsl_qsl_rcvd', 
             'lotw_qsl_sent', 'lotw_qsl_rcvd', 'qsl_sent', 'qsl_rcvd', 'dxcc', 'iota', 'sat_mode', 
             'sat_name', 'prop_mode', 'notes', 'comment', 'user_defined'
