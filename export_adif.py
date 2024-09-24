@@ -63,16 +63,16 @@ def format_adif(qsos):
     adif_lines.append("<ADIF_VER:5>3.1.0")
     adif_lines.append("<EOH>\n")
     
+    # Helper function to format and add a field only if it's not empty or None
+    def add_field(tag, value):
+        nonlocal adif_line
+        if value:  # Only add the field if it has a value (not None or empty string)
+            value_str = str(value).strip()  # Ensure the value is a string and strip any extra spaces
+            adif_line += f" <{tag}:{len(value_str)}>{value_str}"
+    
     # Convert each QSO into ADIF format
     for qso in qsos:
         adif_line = ""
-        
-        # Helper function to format and add a field only if it's not empty or None
-        def add_field(tag, value):
-            nonlocal adif_line
-            if value:  # Only add the field if it has a value (not None or empty string)
-                value_str = str(value)
-                adif_line += f" <{tag}:{len(value_str)}>{value_str}"
         
         # Add fields only if they contain values
         add_field("QSO_DATE", qso.get('qso_date'))
@@ -125,6 +125,8 @@ def format_adif(qsos):
             adif_line += " <EOR>\n"  # End of record
             adif_lines.append(adif_line)
             logging.debug(f"Formatted QSO for {qso['callsign']}: {adif_line.strip()}")
+    
+
     
     return adif_lines
 
