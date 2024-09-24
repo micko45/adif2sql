@@ -86,13 +86,13 @@ def format_adif(qsos):
             f" <MY_COUNTRY:{len(qso['my_country']) if qso['my_country'] else '0'}>{qso['my_country'] if qso['my_country'] else ''}"
             f" <MY_CNTY:{len(qso['my_cnty']) if qso['my_cnty'] else '0'}>{qso['my_cnty'] if qso['my_cnty'] else ''}"
             f" <MY_STATE:{len(qso['my_state']) if qso['my_state'] else '0'}>{qso['my_state'] if qso['my_state'] else ''}"
-            f" <MY_CQ_ZONE:{len(qso['my_cq_zone']) if qso['my_cq_zone'] else '0'}>{qso['my_cq_zone'] if qso['my_cq_zone'] else ''}"
-            f" <MY_ITU_ZONE:{len(qso['my_itu_zone']) if qso['my_itu_zone'] else '0'}>{qso['my_itu_zone'] if qso['my_itu_zone'] else ''}"
+            f" <MY_CQ_ZONE:{len(str(qso['my_cq_zone'])) if qso['my_cq_zone'] else '0'}>{qso['my_cq_zone'] if qso['my_cq_zone'] else ''}"  # Convert to string
+            f" <MY_ITU_ZONE:{len(str(qso['my_itu_zone'])) if qso['my_itu_zone'] else '0'}>{qso['my_itu_zone'] if qso['my_itu_zone'] else ''}"  # Convert to string
             f" <COUNTRY:{len(qso['country']) if qso['country'] else '0'}>{qso['country'] if qso['country'] else ''}"
             f" <CNTY:{len(qso['cnty']) if qso['cnty'] else '0'}>{qso['cnty'] if qso['cnty'] else ''}"
             f" <STATE:{len(qso['state']) if qso['state'] else '0'}>{qso['state'] if qso['state'] else ''}"
-            f" <CQ_ZONE:{len(qso['cq_zone']) if qso['cq_zone'] else '0'}>{qso['cq_zone'] if qso['cq_zone'] else ''}"
-            f" <ITU_ZONE:{len(qso['itu_zone']) if qso['itu_zone'] else '0'}>{qso['itu_zone'] if qso['itu_zone'] else ''}"
+            f" <CQ_ZONE:{len(str(qso['cq_zone'])) if qso['cq_zone'] else '0'}>{qso['cq_zone'] if qso['cq_zone'] else ''}"  # Convert to string
+            f" <ITU_ZONE:{len(str(qso['itu_zone'])) if qso['itu_zone'] else '0'}>{qso['itu_zone'] if qso['itu_zone'] else ''}"  # Convert to string
             f" <CONTEST_ID:{len(qso['contest_id']) if qso['contest_id'] else '0'}>{qso['contest_id'] if qso['contest_id'] else ''}"
             f" <SRX:{len(qso['srx']) if qso['srx'] else '0'}>{qso['srx'] if qso['srx'] else ''}"
             f" <STX:{len(qso['stx']) if qso['stx'] else '0'}>{qso['stx'] if qso['stx'] else ''}"
@@ -102,7 +102,7 @@ def format_adif(qsos):
             f" <EQSL_QSL_RCVD:{len(qso['eqsl_qsl_rcvd']) if qso['eqsl_qsl_rcvd'] else '0'}>{qso['eqsl_qsl_rcvd'] if qso['eqsl_qsl_rcvd'] else ''}"
             f" <LOTW_QSL_SENT:{len(qso['lotw_qsl_sent']) if qso['lotw_qsl_sent'] else '0'}>{qso['lotw_qsl_sent'] if qso['lotw_qsl_sent'] else ''}"
             f" <LOTW_QSL_RCVD:{len(qso['lotw_qsl_rcvd']) if qso['lotw_qsl_rcvd'] else '0'}>{qso['lotw_qsl_rcvd'] if qso['lotw_qsl_rcvd'] else ''}"
-            f" <DXCC:{len(qso['dxcc']) if qso['dxcc'] else '0'}>{qso['dxcc'] if qso['dxcc'] else ''}"
+            f" <DXCC:{len(str(qso['dxcc'])) if qso['dxcc'] else '0'}>{qso['dxcc'] if qso['dxcc'] else ''}"  # Convert to string
             f" <IOTA:{len(qso['iota']) if qso['iota'] else '0'}>{qso['iota'] if qso['iota'] else ''}"
             f" <SAT_MODE:{len(qso['sat_mode']) if qso['sat_mode'] else '0'}>{qso['sat_mode'] if qso['sat_mode'] else ''}"
             f" <SAT_NAME:{len(qso['sat_name']) if qso['sat_name'] else '0'}>{qso['sat_name'] if qso['sat_name'] else ''}"
