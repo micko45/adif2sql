@@ -59,6 +59,7 @@ def create_qso_table():
             my_country VARCHAR(100),
             my_cnty VARCHAR(100),
             my_state VARCHAR(50),
+            my_name VARCHAR(50),
             my_cq_zone INT,
             my_itu_zone INT,
             country VARCHAR(100),
