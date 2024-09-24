@@ -66,9 +66,9 @@ def format_adif(qsos):
     # Helper function to format and add a field only if it's not empty or None
     def add_field(tag, value):
         nonlocal adif_line
-        if value:  # Only add the field if it has a value (not None or empty string)
-            value_str = str(value).strip()  # Ensure the value is a string and strip any extra spaces
-            adif_line += f" <{tag}:{len(value_str)}>{value_str}"
+        if value:
+            value_str = str(value).strip()
+            adif_line += f"<{tag}:{len(value_str)}>{value_str}"
     
     # Convert each QSO into ADIF format
     for qso in qsos:
@@ -92,12 +92,12 @@ def format_adif(qsos):
         add_field("GRIDSQUARE", qso.get('gridsquare'))
         add_field("QTH", qso.get('qth'))
         add_field("NAME", qso.get('name'))
-        add_field("MY_COUNTRY", qso.get('my_country'))  # Handles multiple words
+        add_field("MY_COUNTRY", qso.get('my_country'))
         add_field("MY_CNTY", qso.get('my_cnty'))
         add_field("MY_STATE", qso.get('my_state'))
         add_field("MY_CQ_ZONE", qso.get('my_cq_zone'))
         add_field("MY_ITU_ZONE", qso.get('my_itu_zone'))
-        add_field("COUNTRY", qso.get('country'))  # Handles multiple words
+        add_field("COUNTRY", qso.get('country'))
         add_field("CNTY", qso.get('cnty'))
         add_field("STATE", qso.get('state'))
         add_field("CQ_ZONE", qso.get('cq_zone'))
@@ -117,7 +117,7 @@ def format_adif(qsos):
         add_field("SAT_NAME", qso.get('sat_name'))
         add_field("PROP_MODE", qso.get('prop_mode'))
         add_field("NOTES", qso.get('notes'))
-        add_field("COMMENT", qso.get('comment'))  # Handles multiple words
+        add_field("COMMENT", qso.get('comment'))
         add_field("USER_DEFINED", qso.get('user_defined'))
 
         # Only add the line if it has content
@@ -125,9 +125,7 @@ def format_adif(qsos):
             adif_line += " <EOR>\n"  # End of record
             adif_lines.append(adif_line)
             logging.debug(f"Formatted QSO for {qso['callsign']}: {adif_line.strip()}")
-    
 
-    
     return adif_lines
 
 
