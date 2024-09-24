@@ -55,7 +55,7 @@ This repository provides a set of scripts to manage a MariaDB database for loggi
 ## Usage
 
 ### Authentication
-To Authenticate agains the correct database fill in the file dblogin.py
+To Authenticate against the correct database, fill in the file dblogin.py
 ```
 # Database configuration (change these according to your setup)
 db_host = 'localhost'
