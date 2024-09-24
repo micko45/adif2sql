@@ -37,7 +37,11 @@ This repository provides a set of scripts to manage a MariaDB database for loggi
    
 2. Set up your MariaDB database:
 
-- **Update the connection details in the provided scripts (e.g., db_host, db_user, db_password).
+  To Create a database to play with for this you can use Docker, this database will run locally and the authentication in the "dblogin.py" file will work. 
+  ```bash
+    docker run -it --name tmpdb -d --rm --env MARIADB_USER=root --env MARIADB_ROOT_PASSWORD=letmein -p 3306:3306  mariadb:latest
+  ```
+  If using a custom database, then update the connection details in the provided scripts (e.g., db_host, db_user, db_password) in the file "dblogin.py".
 
 3. Run the database setup script to create the required tables:
 
