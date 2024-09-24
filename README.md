@@ -41,6 +41,10 @@ This repository provides a set of scripts to manage a MariaDB database for loggi
   ```bash
     docker run -it --name tmpdb -d --rm --env MARIADB_USER=root --env MARIADB_ROOT_PASSWORD=letmein -p 3306:3306  mariadb:latest
   ```
+  This database has the --rm flag so once stopped it will be deleted. To stop and detlete this database use the command 
+  ```bash
+    docker stop tmpdb
+```
   If using a custom database, then update the connection details in the provided scripts (e.g., db_host, db_user, db_password) in the file "dblogin.py".
 
 3. Run the database setup script to create the required tables:
