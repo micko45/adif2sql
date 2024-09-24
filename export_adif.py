@@ -68,12 +68,28 @@ def format_adif(qsos):
         nonlocal adif_line
         if value:
             value_str = str(value).strip()
+            # Format date and time values
+            if data_type == 'D':
+                # Convert date to YYYYMMDD
+                value_str = format_date(value_str)
+            elif data_type == 'T':
+                # Convert time to HHMMSS
+                value_str = format_time(value_str)
             length = len(value_str)
             # Include data type if provided
             if data_type:
                 adif_line += f"<{tag}:{length}:{data_type}>{value_str}"
             else:
                 adif_line += f"<{tag}:{length}>{value_str}"
+    
+    # Functions to format date and time strings
+    def format_date(value):
+        # Assume value is in 'YYYY-MM-DD' or similar format
+        return ''.join(filter(str.isdigit, value))[:8]
+    
+    def format_time(value):
+        # Assume value is in 'HH:MM:SS' or similar format
+        return ''.join(filter(str.isdigit, value))[:6]
     
     # Convert each QSO into ADIF format
     for qso in qsos:
@@ -128,7 +144,7 @@ def format_adif(qsos):
     
         # Only add the line if it has content
         if adif_line.strip():
-            adif_line += " <EOR>\n"  # End of record
+            adif_line += "<EOR>\n"  # End of record
             adif_lines.append(adif_line)
             logging.debug(f"Formatted QSO for {qso.get('callsign', 'UNKNOWN')}: {adif_line.strip()}")
     
