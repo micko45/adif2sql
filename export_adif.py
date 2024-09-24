@@ -9,12 +9,12 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 def print_help():
     """Prints the help message with usage information."""
     help_message = """
-    Usage: python export_adif.py [output_file.adif]
+    Usage: python export_adif.py [output_file.adi]
 
     Export QSOs from the database to an ADIF file.
 
     Arguments:
-        output_file.adif   The path to the output ADIF file where the QSOs will be saved.
+        output_file.adi   The path to the output ADIF file where the QSOs will be saved.
     
     Example:
         python export_adif.py /path/to/output.adif
@@ -152,8 +152,8 @@ if __name__ == '__main__':
     adif_file_path = sys.argv[1]
 
     # Check if the file has a .adif extension
-    if not adif_file_path.lower().endswith('.adif'):
-        logging.error("Invalid file extension. ADIF files should have the .adif extension.")
+    if not adif_file_path.lower().endswith('.adi'):
+        logging.error("Invalid file extension. ADIF files should have the .adi extension.")
         print_help()
         sys.exit(1)
 
