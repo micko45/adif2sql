@@ -1,81 +1,128 @@
 import mysql.connector
-from mysql.connector import Error
+import logging
 import sys
+from dblogin import *  # Import database login info (db_host, db_user, db_password, db_name, db_port)
 
-# Database configuration (update these according to your setup)
-db_host = 'localhost'
-db_user = 'root'
-db_password = 'your_password'
-db_name = 'adif_log'
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+def print_help():
+    """Prints the help message with usage information."""
+    help_message = """
+    Usage: python export_adif.py [output_file.adif]
+
+    Export QSOs from the database to an ADIF file.
+
+    Arguments:
+        output_file.adif   The path to the output ADIF file where the QSOs will be saved.
+    
+    Example:
+        python export_adif.py /path/to/output.adif
+    """
+    print(help_message)
+    logging.info("Displayed help message.")
 
 def connect_database():
-    """Connect to MariaDB."""
+    """Connect to MariaDB with ssl_disabled."""
     try:
         connection = mysql.connector.connect(
             host=db_host,
             user=db_user,
             password=db_password,
-            database=db_name
+            database=db_name,
+            port=db_port,
+            ssl_disabled=True  # Disable SSL if not needed
         )
+        if connection.is_connected():
+            logging.info("Connected to the database.")
         return connection
-    except Error as e:
-        print(f"Error: {e}")
-        sys.exit(1)
+    except mysql.connector.Error as e:
+        logging.error(f"Error while connecting to the database: {e}")
+        return None
 
 def fetch_qsos(connection):
     """Fetch all QSOs from the database."""
     try:
         cursor = connection.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM qsos;")
+        fetch_query = "SELECT * FROM qsos"
+        cursor.execute(fetch_query)
         qsos = cursor.fetchall()
+        logging.info(f"Fetched {len(qsos)} QSOs from the database.")
         return qsos
-    except Error as e:
-        print(f"Error: {e}")
+    except mysql.connector.Error as e:
+        logging.error(f"Error fetching QSOs: {e}")
         return []
     finally:
         cursor.close()
 
-def adif_format(qso):
-    """Convert a single QSO to ADIF format."""
-    adif_entry = ""
+def format_adif(qsos):
+    """Format QSOs into ADIF format."""
+    adif_lines = []
     
-    for key, value in qso.items():
-        if value is not None:
-            if isinstance(value, (str, int, float)):
-                value_str = str(value)
-                adif_entry += f"<{key.upper()}:{len(value_str)}>{value_str} "
+    # Add ADIF header
+    adif_lines.append("<ADIF_VER:5>3.1.0")
+    adif_lines.append("<EOH>\n")
     
-    adif_entry += "<eor>\n"
-    return adif_entry
+    # Convert each QSO into ADIF format
+    for qso in qsos:
+        adif_line = (
+            f"<QSO_DATE:{len(str(qso['qso_date']))}>{qso['qso_date']}"
+            f" <TIME_ON:{len(str(qso['time_on']))}>{qso['time_on']}"
+            f" <CALL:{len(qso['callsign'])}>{qso['callsign']}"
+            f" <BAND:{len(qso['band'])}>{qso['band']}"
+            f" <FREQ:{len(str(qso['freq']))}>{qso['freq']}"
+            f" <MODE:{len(qso['mode'])}>{qso['mode']}"
+            f" <RST_SENT:{len(qso['rst_sent'])}>{qso['rst_sent']}"
+            f" <RST_RCVD:{len(qso['rst_rcvd'])}>{qso['rst_rcvd']}"
+            f" <NAME:{len(qso['name'])}>{qso['name']}"
+            f" <QTH:{len(qso['qth'])}>{qso['qth']}"
+            f" <GRIDSQUARE:{len(qso['gridsquare'])}>{qso['gridsquare']}"
+            f" <TX_PWR:{len(str(qso['tx_pwr']))}>{qso['tx_pwr']}"
+            " <eor>\n"
+        )
+        adif_lines.append(adif_line)
+        logging.debug(f"Formatted QSO for {qso['callsign']}: {adif_line.strip()}")
+    
+    return adif_lines
 
-def export_to_adif(qsos, output_file):
-    """Export QSO data to an ADIF file."""
-    with open(output_file, 'w') as file:
-        file.write("<ADIF_VER:5>3.1.0\n")
-        file.write("<EOH>\n\n")  # End of header
-        
-        for qso in qsos:
-            file.write(adif_format(qso))
-
-def export_adif(output_file):
-    """Main function to export QSOs to an ADIF file."""
+def export_adif(adif_file_path):
+    """Export all QSOs from the database to an ADIF file."""
     connection = connect_database()
-    qsos = fetch_qsos(connection)
+    if connection is None:
+        logging.error("Failed to connect to the database. Exiting.")
+        return
     
-    if qsos:
-        export_to_adif(qsos, output_file)
-        print(f"Exported {len(qsos)} QSOs to {output_file}.")
-    else:
-        print("No QSOs found to export.")
+    qsos = fetch_qsos(connection)
+    if not qsos:
+        logging.warning("No QSOs found in the database. Exiting.")
+        return
+    
+    adif_lines = format_adif(qsos)
+    
+    # Write to ADIF file
+    try:
+        with open(adif_file_path, 'w') as file:
+            file.writelines(adif_lines)
+        logging.info(f"Exported {len(qsos)} QSOs to {adif_file_path}")
+    except IOError as e:
+        logging.error(f"Error writing to ADIF file: {e}")
     
     if connection.is_connected():
         connection.close()
 
 if __name__ == '__main__':
+    # Check if no arguments or incorrect arguments are provided
     if len(sys.argv) != 2:
-        print("Usage: python export_adif.py output-file.adif")
+        logging.error("No output file specified or too many arguments.")
+        print_help()
         sys.exit(1)
-    
-    output_file = sys.argv[1]
-    export_adif(output_file)
 
+    adif_file_path = sys.argv[1]
+
+    # Check if the file has a .adif extension
+    if not adif_file_path.lower().endswith('.adif'):
+        logging.error("Invalid file extension. ADIF files should have the .adif extension.")
+        print_help()
+        sys.exit(1)
+
+    export_adif(adif_file_path)
