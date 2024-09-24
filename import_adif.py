@@ -48,10 +48,10 @@ import re
 def parse_adif(adif_file_path):
     """Parse ADIF file and return a list of QSO dictionaries."""
     qsos = []
-    
+
     with open(adif_file_path, 'r') as file:
         content = file.read()
-    
+
     # Remove header up to <EOH>
     header_end = content.upper().find("<EOH>")
     if header_end != -1:
@@ -62,26 +62,29 @@ def parse_adif(adif_file_path):
 
     # Split content by <EOR>
     records = re.split(r'(?i)<EOR>', content)
-    
+
     for record in records:
         record = record.strip()
         if not record:
             continue
         qso_data = {}
         # Use regex to find all fields
-        fields = re.findall(r'<([^:<>]+):(\d+)>([^<]*)', record)
+        # Updated regex pattern to handle optional data types
+        fields = re.findall(r'<([^:<>]+):(\d+)(?::([A-Z]))?>([^<]*)', record, re.IGNORECASE)
         for field in fields:
             field_name = field[0].lower()
             field_length = int(field[1])
-            field_value = field[2][:field_length].strip()
+            data_type = field[2]  # May be None if data type is not specified
+            field_value = field[3][:field_length].strip()
             if field_name == 'call':
                 field_name = 'callsign'
             qso_data[field_name] = field_value
         if qso_data:
             qsos.append(qso_data)
-    
+
     logging.info(f"Total QSOs parsed: {len(qsos)}")
     return qsos
+
 
 def insert_qso(connection, qso):
     """Insert a single QSO into the MariaDB database."""
