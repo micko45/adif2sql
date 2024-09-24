@@ -65,57 +65,69 @@ def format_adif(qsos):
     
     # Convert each QSO into ADIF format
     for qso in qsos:
-        adif_line = (
-            f"<QSO_DATE:{len(str(qso['qso_date']))}>{qso['qso_date']}"
-            f" <TIME_ON:{len(str(qso['time_on']))}>{qso['time_on']}"
-            f" <TIME_OFF:{len(str(qso['time_off'])) if qso['time_off'] else '0'}>{qso['time_off'] if qso['time_off'] else ''}"
-            f" <CALL:{len(qso['callsign'])}>{qso['callsign']}"
-            f" <BAND:{len(qso['band']) if qso['band'] else '0'}>{qso['band'] if qso['band'] else ''}"
-            f" <FREQ:{len(str(qso['freq'])) if qso['freq'] else '0'}>{qso['freq'] if qso['freq'] else ''}"
-            f" <MODE:{len(qso['mode']) if qso['mode'] else '0'}>{qso['mode'] if qso['mode'] else ''}"
-            f" <SUBMODE:{len(qso['submode']) if qso['submode'] else '0'}>{qso['submode'] if qso['submode'] else ''}"
-            f" <RST_SENT:{len(qso['rst_sent']) if qso['rst_sent'] else '0'}>{qso['rst_sent'] if qso['rst_sent'] else ''}"
-            f" <RST_RCVD:{len(qso['rst_rcvd']) if qso['rst_rcvd'] else '0'}>{qso['rst_rcvd'] if qso['rst_rcvd'] else ''}"
-            f" <TX_PWR:{len(str(qso['tx_pwr'])) if qso['tx_pwr'] else '0'}>{qso['tx_pwr'] if qso['tx_pwr'] else ''}"
-            f" <OPERATOR:{len(qso['operator']) if qso['operator'] else '0'}>{qso['operator'] if qso['operator'] else ''}"
-            f" <STATION_CALLSIGN:{len(qso['station_callsign']) if qso['station_callsign'] else '0'}>{qso['station_callsign'] if qso['station_callsign'] else ''}"
-            f" <MY_GRIDSQUARE:{len(qso['my_gridsquare']) if qso['my_gridsquare'] else '0'}>{qso['my_gridsquare'] if qso['my_gridsquare'] else ''}"
-            f" <GRIDSQUARE:{len(qso['gridsquare']) if qso['gridsquare'] else '0'}>{qso['gridsquare'] if qso['gridsquare'] else ''}"
-            f" <QTH:{len(qso['qth']) if qso['qth'] else '0'}>{qso['qth'] if qso['qth'] else ''}"
-            f" <NAME:{len(qso['name']) if qso['name'] else '0'}>{qso['name'] if qso['name'] else ''}"
-            f" <MY_COUNTRY:{len(qso['my_country']) if qso['my_country'] else '0'}>{qso['my_country'] if qso['my_country'] else ''}"
-            f" <MY_CNTY:{len(qso['my_cnty']) if qso['my_cnty'] else '0'}>{qso['my_cnty'] if qso['my_cnty'] else ''}"
-            f" <MY_STATE:{len(qso['my_state']) if qso['my_state'] else '0'}>{qso['my_state'] if qso['my_state'] else ''}"
-            f" <MY_CQ_ZONE:{len(str(qso['my_cq_zone'])) if qso['my_cq_zone'] else '0'}>{qso['my_cq_zone'] if qso['my_cq_zone'] else ''}"  # Convert to string
-            f" <MY_ITU_ZONE:{len(str(qso['my_itu_zone'])) if qso['my_itu_zone'] else '0'}>{qso['my_itu_zone'] if qso['my_itu_zone'] else ''}"  # Convert to string
-            f" <COUNTRY:{len(qso['country']) if qso['country'] else '0'}>{qso['country'] if qso['country'] else ''}"
-            f" <CNTY:{len(qso['cnty']) if qso['cnty'] else '0'}>{qso['cnty'] if qso['cnty'] else ''}"
-            f" <STATE:{len(qso['state']) if qso['state'] else '0'}>{qso['state'] if qso['state'] else ''}"
-            f" <CQ_ZONE:{len(str(qso['cq_zone'])) if qso['cq_zone'] else '0'}>{qso['cq_zone'] if qso['cq_zone'] else ''}"  # Convert to string
-            f" <ITU_ZONE:{len(str(qso['itu_zone'])) if qso['itu_zone'] else '0'}>{qso['itu_zone'] if qso['itu_zone'] else ''}"  # Convert to string
-            f" <CONTEST_ID:{len(qso['contest_id']) if qso['contest_id'] else '0'}>{qso['contest_id'] if qso['contest_id'] else ''}"
-            f" <SRX:{len(qso['srx']) if qso['srx'] else '0'}>{qso['srx'] if qso['srx'] else ''}"
-            f" <STX:{len(qso['stx']) if qso['stx'] else '0'}>{qso['stx'] if qso['stx'] else ''}"
-            f" <CATEGORY:{len(qso['category']) if qso['category'] else '0'}>{qso['category'] if qso['category'] else ''}"
-            f" <OPERATOR_CATEGORY:{len(qso['operator_category']) if qso['operator_category'] else '0'}>{qso['operator_category'] if qso['operator_category'] else ''}"
-            f" <EQSL_QSL_SENT:{len(qso['eqsl_qsl_sent']) if qso['eqsl_qsl_sent'] else '0'}>{qso['eqsl_qsl_sent'] if qso['eqsl_qsl_sent'] else ''}"
-            f" <EQSL_QSL_RCVD:{len(qso['eqsl_qsl_rcvd']) if qso['eqsl_qsl_rcvd'] else '0'}>{qso['eqsl_qsl_rcvd'] if qso['eqsl_qsl_rcvd'] else ''}"
-            f" <LOTW_QSL_SENT:{len(qso['lotw_qsl_sent']) if qso['lotw_qsl_sent'] else '0'}>{qso['lotw_qsl_sent'] if qso['lotw_qsl_sent'] else ''}"
-            f" <LOTW_QSL_RCVD:{len(qso['lotw_qsl_rcvd']) if qso['lotw_qsl_rcvd'] else '0'}>{qso['lotw_qsl_rcvd'] if qso['lotw_qsl_rcvd'] else ''}"
-            f" <DXCC:{len(str(qso['dxcc'])) if qso['dxcc'] else '0'}>{qso['dxcc'] if qso['dxcc'] else ''}"  # Convert to string
-            f" <IOTA:{len(qso['iota']) if qso['iota'] else '0'}>{qso['iota'] if qso['iota'] else ''}"
-            f" <SAT_MODE:{len(qso['sat_mode']) if qso['sat_mode'] else '0'}>{qso['sat_mode'] if qso['sat_mode'] else ''}"
-            f" <SAT_NAME:{len(qso['sat_name']) if qso['sat_name'] else '0'}>{qso['sat_name'] if qso['sat_name'] else ''}"
-            f" <PROP_MODE:{len(qso['prop_mode']) if qso['prop_mode'] else '0'}>{qso['prop_mode'] if qso['prop_mode'] else ''}"
-            f" <NOTES:{len(qso['notes']) if qso['notes'] else '0'}>{qso['notes'] if qso['notes'] else ''}"
-            f" <COMMENT:{len(qso['comment']) if qso['comment'] else '0'}>{qso['comment'] if qso['comment'] else ''}"
-            f" <USER_DEFINED:{len(qso['user_defined']) if qso['user_defined'] else '0'}>{qso['user_defined'] if qso['user_defined'] else ''}"
-            " <eor>\n"
-        )
-        adif_lines.append(adif_line)
-        logging.debug(f"Formatted QSO for {qso['callsign']}: {adif_line.strip()}")
+        adif_line = ""
+        
+        # Helper function to format and add a field only if it's not empty or None
+        def add_field(tag, value):
+            nonlocal adif_line
+            if value:  # Only add the field if it has a value (not None or empty string)
+                value_str = str(value)
+                adif_line += f" <{tag}:{len(value_str)}>{value_str}"
+        
+        # Add fields only if they contain values
+        add_field("QSO_DATE", qso.get('qso_date'))
+        add_field("TIME_ON", qso.get('time_on'))
+        add_field("TIME_OFF", qso.get('time_off'))
+        add_field("CALL", qso.get('callsign'))
+        add_field("BAND", qso.get('band'))
+        add_field("FREQ", qso.get('freq'))
+        add_field("MODE", qso.get('mode'))
+        add_field("SUBMODE", qso.get('submode'))
+        add_field("RST_SENT", qso.get('rst_sent'))
+        add_field("RST_RCVD", qso.get('rst_rcvd'))
+        add_field("TX_PWR", qso.get('tx_pwr'))
+        add_field("OPERATOR", qso.get('operator'))
+        add_field("STATION_CALLSIGN", qso.get('station_callsign'))
+        add_field("MY_GRIDSQUARE", qso.get('my_gridsquare'))
+        add_field("GRIDSQUARE", qso.get('gridsquare'))
+        add_field("QTH", qso.get('qth'))
+        add_field("NAME", qso.get('name'))
+        add_field("MY_COUNTRY", qso.get('my_country'))  # Handles multiple words
+        add_field("MY_CNTY", qso.get('my_cnty'))
+        add_field("MY_STATE", qso.get('my_state'))
+        add_field("MY_CQ_ZONE", qso.get('my_cq_zone'))
+        add_field("MY_ITU_ZONE", qso.get('my_itu_zone'))
+        add_field("COUNTRY", qso.get('country'))  # Handles multiple words
+        add_field("CNTY", qso.get('cnty'))
+        add_field("STATE", qso.get('state'))
+        add_field("CQ_ZONE", qso.get('cq_zone'))
+        add_field("ITU_ZONE", qso.get('itu_zone'))
+        add_field("CONTEST_ID", qso.get('contest_id'))
+        add_field("SRX", qso.get('srx'))
+        add_field("STX", qso.get('stx'))
+        add_field("CATEGORY", qso.get('category'))
+        add_field("OPERATOR_CATEGORY", qso.get('operator_category'))
+        add_field("EQSL_QSL_SENT", qso.get('eqsl_qsl_sent'))
+        add_field("EQSL_QSL_RCVD", qso.get('eqsl_qsl_rcvd'))
+        add_field("LOTW_QSL_SENT", qso.get('lotw_qsl_sent'))
+        add_field("LOTW_QSL_RCVD", qso.get('lotw_qsl_rcvd'))
+        add_field("DXCC", qso.get('dxcc'))
+        add_field("IOTA", qso.get('iota'))
+        add_field("SAT_MODE", qso.get('sat_mode'))
+        add_field("SAT_NAME", qso.get('sat_name'))
+        add_field("PROP_MODE", qso.get('prop_mode'))
+        add_field("NOTES", qso.get('notes'))
+        add_field("COMMENT", qso.get('comment'))  # Handles multiple words
+        add_field("USER_DEFINED", qso.get('user_defined'))
+
+        # Only add the line if it has content
+        if adif_line.strip():
+            adif_line += " <EOR>\n"  # End of record
+            adif_lines.append(adif_line)
+            logging.debug(f"Formatted QSO for {qso['callsign']}: {adif_line.strip()}")
     
     return adif_lines
+
 
 def export_adif(adif_file_path):
     """Export all QSOs from the database to an ADIF file."""
