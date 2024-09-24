@@ -7,6 +7,25 @@ from dblogin import *
 # Configure logging
 logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(levelname)s - %(message)s')
 
+def print_help():
+    """Prints help/usage information."""
+    help_message = """
+    Usage: python import_adif.py [path/to/adif-file.adif]
+    
+    This script imports ADIF data into the MariaDB database.
+
+    Arguments:
+        path/to/adif-file.adif   The path to the ADIF file that will be imported into the database.
+
+    Example:
+        python import_adif.py example.adif
+
+    Notes:
+        Ensure that the database connection information is set up in the 'dblogin.py' file.
+        The ADIF file should be well-formed according to the ADIF specification.
+    """
+    print(help_message)
+
 def connect_database():
     """Connect to MariaDB."""
     try:
@@ -17,7 +36,6 @@ def connect_database():
             database=db_name,
             port=db_port,
             ssl_disabled=True  # Disable SSL if not needed
-
         )
         logging.info("Connected to the database.")
         return connection
@@ -151,8 +169,16 @@ def import_adif(adif_file_path):
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        logging.error("Usage: python import_adif.py path/to/adif-file.adif")
+        logging.error("Invalid number of arguments.")
+        print_help()
         sys.exit(1)
     
     adif_file_path = sys.argv[1]
+    
+    # Validate the file extension to ensure it's an ADIF file
+    if not adif_file_path.lower().endswith('.adif'):
+        logging.error("Invalid file extension. Please provide a valid .adif file.")
+        print_help()
+        sys.exit(1)
+
     import_adif(adif_file_path)
