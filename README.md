@@ -12,6 +12,7 @@ This repository provides a set of scripts to manage a MariaDB database for loggi
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
+  - [Database Authentication](#Authentication)
   - [Creating the Database](#creating-the-database)
   - [Importing ADIF Data](#importing-adif-data)
   - [Exporting ADIF Data](#exporting-adif-data)
@@ -44,6 +45,17 @@ This repository provides a set of scripts to manage a MariaDB database for loggi
   python create_database.py
 ```
 ## Usage
+
+### Authentication
+To Authenticate agains the correct database fill in the file dblogin.py
+```
+# Database configuration (change these according to your setup)
+db_host = 'localhost'
+db_user = 'root'
+db_password = 'letmein'
+db_name = 'qso_log'
+db_port = '3306'
+```
 
 ### Creating the Database
 
