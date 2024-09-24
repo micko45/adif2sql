@@ -64,23 +64,28 @@ def format_adif(qsos):
     adif_lines.append("<EOH>\n")
     
     # Helper function to format and add a field only if it's not empty or None
-    def add_field(tag, value):
+    def add_field(tag, value, data_type=None):
         nonlocal adif_line
         if value:
             value_str = str(value).strip()
-            adif_line += f"<{tag}:{len(value_str)}>{value_str}"
+            length = len(value_str)
+            # Include data type if provided
+            if data_type:
+                adif_line += f"<{tag}:{length}:{data_type}>{value_str}"
+            else:
+                adif_line += f"<{tag}:{length}>{value_str}"
     
     # Convert each QSO into ADIF format
     for qso in qsos:
         adif_line = ""
         
-        # Add fields only if they contain values
-        add_field("QSO_DATE", qso.get('qso_date'))
-        add_field("TIME_ON", qso.get('time_on'))
-        add_field("TIME_OFF", qso.get('time_off'))
+        # Add fields only if they contain values, include data types where appropriate
+        add_field("QSO_DATE", qso.get('qso_date'), data_type='D')
+        add_field("TIME_ON", qso.get('time_on'), data_type='T')
+        add_field("TIME_OFF", qso.get('time_off'), data_type='T')
         add_field("CALL", qso.get('callsign'))
         add_field("BAND", qso.get('band'))
-        add_field("FREQ", qso.get('freq'))
+        add_field("FREQ", qso.get('freq'), data_type='N')
         add_field("MODE", qso.get('mode'))
         add_field("SUBMODE", qso.get('submode'))
         add_field("RST_SENT", qso.get('rst_sent'))
@@ -120,15 +125,14 @@ def format_adif(qsos):
         add_field("NOTES", qso.get('notes'))
         add_field("COMMENT", qso.get('comment'))
         add_field("USER_DEFINED", qso.get('user_defined'))
-
+    
         # Only add the line if it has content
         if adif_line.strip():
             adif_line += " <EOR>\n"  # End of record
             adif_lines.append(adif_line)
-            logging.debug(f"Formatted QSO for {qso['callsign']}: {adif_line.strip()}")
-
+            logging.debug(f"Formatted QSO for {qso.get('callsign', 'UNKNOWN')}: {adif_line.strip()}")
+    
     return adif_lines
-
 
 def export_adif(adif_file_path):
     """Export all QSOs from the database to an ADIF file."""
