@@ -93,7 +93,7 @@ def insert_qso(connection, qso):
 
         # List of fields available in the ADIF file that should be mapped to the database columns
         fields = [
-            'qso_date', 'time_on', 'time_off', 'callsign', 'band', 'freq', 'mode', 'submode',
+            'qso_date', 'qso_date_off', 'time_on', 'time_off', 'callsign', 'band', 'freq', 'mode', 'submode',
             'rst_sent', 'rst_rcvd', 'tx_pwr', 'operator', 'station_callsign', 'my_gridsquare',
             'gridsquare', 'qth', 'name', 'my_country', 'my_cnty', 'my_state', 'my_cq_zone', 
             'my_itu_zone', 'country', 'cnty', 'state', 'my_name', 'cq_zone', 'itu_zone', 'contest_id', 
