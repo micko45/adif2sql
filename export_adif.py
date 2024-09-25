@@ -97,6 +97,7 @@ def format_adif(qsos):
         
         # Add fields only if they contain values, include data types where appropriate
         add_field("QSO_DATE", qso.get('qso_date'), data_type='D')
+        add_field("QSO_DATE_OFF", qso.get('qso_date_off'), data_type='D')
         add_field("TIME_ON", qso.get('time_on'), data_type='T')
         add_field("TIME_OFF", qso.get('time_off'), data_type='T')
         add_field("CALL", qso.get('callsign'))
