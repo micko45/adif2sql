@@ -40,6 +40,7 @@ def create_qso_table():
             id INT AUTO_INCREMENT PRIMARY KEY,
             adif_ver VARCHAR(10),
             qso_date DATE,
+            qso_date_off DATE,
             time_on TIME,
             time_off TIME,
             callsign VARCHAR(20),
